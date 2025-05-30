@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-exports.handler = async function(event) {
+exports.handler = async function (event) {
   try {
     const { message } = JSON.parse(event.body);
 
@@ -18,6 +18,7 @@ exports.handler = async function(event) {
 
     const data = await response.json();
 
+    // Validar si OpenAI respondió correctamente
     if (data.choices && data.choices.length > 0) {
       return {
         statusCode: 200,
@@ -25,7 +26,7 @@ exports.handler = async function(event) {
       };
     } else {
       return {
-        statusCode: 500,
+        statusCode: 200,
         body: JSON.stringify({ reply: "La IA no devolvió una respuesta." })
       };
     }
@@ -33,7 +34,7 @@ exports.handler = async function(event) {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ reply: "Hubo un error al procesar tu mensaje." })
+      body: JSON.stringify({ reply: "Error en el servidor: " + error.message })
     };
   }
 };
