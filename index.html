@@ -17,7 +17,47 @@
     <link rel="stylesheet" href="assets/css/navbar_uk.css">
     <link rel="stylesheet" href="assets/css/Video-Responsive.css">
 </head>
+<script>
+  async function enviarMensaje() {
+    const input = document.getElementById('input');
+    const chat = document.getElementById('chat');
+    const mensaje = input.value.trim();
+    if (!mensaje) return;
 
+    // Mostrar mensaje del usuario
+    const userMsg = document.createElement('div');
+    userMsg.innerText = mensaje;
+    userMsg.style = "align-self: flex-end; background: transparent; border: 1px solid white; padding: 8px 14px; border-radius: 20px; max-width: 80%; color: white;";
+    chat.appendChild(userMsg);
+
+    input.value = "";
+
+    // Llama a tu función de Netlify
+    const res = await fetch('/.netlify/functions/chatgpt', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: mensaje })
+    });
+
+    const data = await res.json();
+
+    const botMsg = document.createElement('div');
+    botMsg.innerText = data.reply || "La IA no devolvió una respuesta.";
+    botMsg.style = "align-self: flex-start; background: #26aefb; padding: 8px 14px; border-radius: 20px; max-width: 80%; color: white;";
+    chat.appendChild(botMsg);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // Enviar con Enter
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('input');
+    input.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        enviarMensaje();
+      }
+    });
+  });
+</script>
 <body>
     <nav class="navbar navbar-expand-lg sticky-top navigation-clean-button navbar-light" style="background: #102947;">
         <div class="container"><a class="d-inline-block" href="https://universidaduk.com/"><img src="assets/img/Universidad_Uk_2022.png"></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon" style="background: url(&quot;assets/img/menu.png&quot;) center / cover no-repeat;"></span></button>
