@@ -18,7 +18,7 @@ exports.handler = async function(event) {
 
     const data = await response.json();
 
-    if (data.choices && data.choices[0]) {
+    if (data.choices && data.choices.length > 0) {
       return {
         statusCode: 200,
         body: JSON.stringify({ reply: data.choices[0].message.content })
@@ -26,14 +26,14 @@ exports.handler = async function(event) {
     } else {
       return {
         statusCode: 500,
-        body: JSON.stringify({ reply: "Hubo un error al procesar tu mensaje." })
+        body: JSON.stringify({ reply: "La IA no devolvió una respuesta." })
       };
     }
 
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ reply: "Error en el servidor: " + error.message })
+      body: JSON.stringify({ reply: "Hubo un error al procesar tu mensaje." })
     };
   }
 };
