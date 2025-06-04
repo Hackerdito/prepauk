@@ -1,8 +1,22 @@
 const fetch = require("node-fetch");
 
 exports.handler = async function(event) {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ reply: "Método no permitido" })
+    };
+  }
+
   try {
-    const { message } = JSON.parse(event.body);
+    const { message } = JSON.parse(event.body || '{}');
+
+    if (!message) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ reply: "No se recibió ningún mensaje." })
+      };
+    }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -18,7 +32,7 @@ exports.handler = async function(event) {
 
     const data = await response.json();
 
-    if (!data || !data.choices || !data.choices.length) {
+    if (!data || !data.choices || !data.choices[0]) {
       return {
         statusCode: 500,
         body: JSON.stringify({ reply: "La IA no devolvió una respuesta válida." })
@@ -33,7 +47,7 @@ exports.handler = async function(event) {
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ reply: "Error en el servidor: " + error.message })
+      body: JSON.stringify({ reply: "Error del servidor: " + error.message })
     };
   }
 };
